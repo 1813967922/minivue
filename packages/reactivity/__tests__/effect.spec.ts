@@ -1,5 +1,5 @@
 import { reactive } from "../src/reactive";
-import { effect } from "../src/effect";
+import { effect,stop } from "../src/effect";
 
 describe("effect", () => {
   test("effect test", () => {
@@ -47,5 +47,33 @@ describe("effect", () => {
     expect(dummy).toBe(1);
     run();
     expect(dummy).toBe(2);
+  });
+
+  test("stop", () => {
+    let dummy;
+    const obj = reactive({ prop: 1 });
+    const runner = effect(() => {
+      dummy = obj.prop;
+    });
+    obj.prop = 2;
+    expect(dummy).toBe(2);
+    stop(runner);
+    obj.prop = 3;
+    expect(dummy).toBe(2);
+    runner();
+    expect(dummy).toBe(3);
+  });
+
+  test("onStop", () => {
+    const obj = reactive({ prop: 1 });
+    const onStop = vitest.fn();
+    let dummy;
+    const runner = effect(() => {
+      dummy = obj.prop;
+    },{
+      onStop
+    });
+    stop(runner);
+    expect(onStop).toBeCalledTimes(1);
   });
 });

@@ -36,6 +36,14 @@ importers:
         specifier: ^0.22.1
         version: 0.22.1
 
+  packages/reactivity:
+    dependencies:
+      '@minivue/shared':
+        specifier: workspace:^
+        version: link:../shared
+
+  packages/shared: {}
+
 packages:
 
   /@esbuild/android-arm@0.15.18:
