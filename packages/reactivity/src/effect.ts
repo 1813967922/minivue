@@ -4,9 +4,7 @@ const targetMap = new WeakMap();
 
 let activeEffect;
 
-/**
- * 响应式副作用实现
- */
+// 副作用函数对象
 export class ReactiveEffect {
   private _fn: any;
   deps = [];
@@ -17,12 +15,12 @@ export class ReactiveEffect {
     this._fn = fn;
     this.scheduler = scheduler;
   }
-
+  // 执行副作用函数
   run() {
     activeEffect = this;
     return this._fn();
   }
-
+  // 停止副作用函数
   stop() {
     if (this.active) {
       cleanupEffect(this);
@@ -34,17 +32,14 @@ export class ReactiveEffect {
   }
 }
 
+// 清除副作用函数 
 function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect);
   });
 }
 
-/**
- * 依赖收集
- * @param target
- * @param key
- */
+// 依赖收集
 export function track(target, key) {
   let depsMap = targetMap.get(target);
   if (!depsMap) {
@@ -61,10 +56,7 @@ export function track(target, key) {
   activeEffect.deps.push(dep);
 }
 
-/**
- * 副作用函数
- * @param fn
- */
+// 声明副作用函数
 export function effect(fn, options: any = {}) {
   const scheduler = options.scheduler;
   const _effect = new ReactiveEffect(fn, scheduler);
@@ -76,11 +68,7 @@ export function effect(fn, options: any = {}) {
   return runner;
 }
 
-/**
- * 触发依赖
- * @param target
- * @param key
- */
+// 触发依赖
 export function trigger(target, key) {
   let depsMap = targetMap.get(target);
   let dep = depsMap.get(key);
