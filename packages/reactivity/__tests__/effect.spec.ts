@@ -19,11 +19,33 @@ describe("effect", () => {
     let dummy = 10;
     let runner = effect(() => {
       dummy++;
-      return "foo"
+      return "foo";
     });
     expect(dummy).toBe(11);
     const r = runner();
     expect(dummy).toBe(12);
     expect(r).toBe("foo");
+  });
+
+  test("scheduler", () => {
+    let dummy;
+    let run;
+    const scheduler = vitest.fn(() => {
+      run = runner;
+    });
+    const obj = reactive({ foo: 1 });
+    let runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      { scheduler }
+    );
+    expect(scheduler).not.toHaveBeenCalled();
+    expect(dummy).toBe(1);
+    obj.foo++;
+    expect(scheduler).toHaveBeenCalledTimes(1);
+    expect(dummy).toBe(1);
+    run();
+    expect(dummy).toBe(2);
   });
 });
