@@ -15,7 +15,7 @@ export class ReactiveEffect {
 
   run() {
     activeEffect = this;
-    this._fn();
+    return this._fn();
   }
 }
 
@@ -43,10 +43,11 @@ export function track(target, key) {
  * 副作用函数
  * @param fn 
  */
-// TODO 实现 effect 返回 runner
+// TODO 实现 scheduler
 export function effect(fn) {
   const _effect = new ReactiveEffect(fn);
-  _effect.run();
+  _effect.run()
+  return _effect.run.bind(_effect);
 }
 
 /**
